@@ -10,10 +10,10 @@ import (
 func main() {
 	m := martini.Classic()
 	m.Use(render.Renderer())
-	m.Get("/passage/query", PassageQueryHandler)
+	m.Get("/search", PassageQueryHandler)
 	m.Run()
 }
 
 func PassageQueryHandler(ren render.Render, req *http.Request) {
-	ren.JSON(200, PassageQuery(req.URL.Query().Get("passage")))
+	ren.JSON(200, PassageQuery(req.URL.Query().Get("q")))
 }
