@@ -16,33 +16,8 @@ func reportPassageQueryError(err error) {
 }
 
 func PassageQuery(s string) Passage {
-	params := make(url.Values)
-
-	apiKey := os.Getenv("ESV_API_KEY")
-	if len(apiKey) < 1 {
-		apiKey = "IP"
-	}
-
-	params.Set("include-passage-references", "true")
-	params.Set("include-verse-numbers", "true")
-	params.Set("include-footnotes", "false")
-	params.Set("include-footnote-links", "false")
-	params.Set("include-headings", "false")
-	params.Set("include-subheadings", "false")
-	params.Set("include-surrounding-chapters", "false")
-	params.Set("include-word-ids", "false")
-	params.Set("link-url", "http,//www.gnpcb.org/esv/search/")
-	params.Set("include-audio-link", "false")
-	params.Set("audio-format", "mp3")
-	params.Set("audio-version", "hw")
-	params.Set("include-short-copyright", "false")
-	params.Set("include-copyright", "false")
-	params.Set("output-format", "html")
-	params.Set("key", apiKey)
-	params.Set("passage", s)
-
 	requestUrl, err := url.Parse("http://www.esvapi.org/v2/rest/passageQuery")
-	requestUrl.RawQuery = params.Encode()
+	requestUrl.RawQuery = esvParams(s).Encode()
 
 	resp, err := http.Get(requestUrl.String())
 	reportPassageQueryError(err)
@@ -62,4 +37,37 @@ func PassageQuery(s string) Passage {
 	title := re.FindStringSubmatch(body)[1]
 
 	return Passage{title, body}
+}
+
+func apiKey() (s string) {
+	s = os.Getenv("ESV_API_KEY")
+
+	if len(s) < 1 {
+		s = "IP"
+	}
+	return
+}
+
+func esvParams(s string) url.Values {
+	v := make(url.Values)
+
+	v.Set("include-passage-references", "true")
+	v.Set("include-verse-numbers", "true")
+	v.Set("include-footnotes", "false")
+	v.Set("include-footnote-links", "false")
+	v.Set("include-headings", "false")
+	v.Set("include-subheadings", "false")
+	v.Set("include-surrounding-chapters", "false")
+	v.Set("include-word-ids", "false")
+	v.Set("link-url", "http,//www.gnpcb.org/esv/search/")
+	v.Set("include-audio-link", "false")
+	v.Set("audio-format", "mp3")
+	v.Set("audio-version", "hw")
+	v.Set("include-short-copyright", "false")
+	v.Set("include-copyright", "false")
+	v.Set("output-format", "html")
+	v.Set("key", apiKey())
+	v.Set("passage", s)
+
+	return v
 }

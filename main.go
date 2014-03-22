@@ -15,5 +15,12 @@ func main() {
 }
 
 func PassageQueryHandler(ren render.Render, req *http.Request) {
+	defer recoverPassageQueryPanic(ren)
 	ren.JSON(200, PassageQuery(req.URL.Query().Get("q")))
+}
+
+func recoverPassageQueryPanic(ren render.Render) {
+	if r := recover(); r != nil {
+		ren.Error(404)
+	}
 }
