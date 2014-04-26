@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/danott/scabbard",
+	"ImportPath": "github.com/danott/scabbard-api",
 	"GoVersion": "go1.2.1",
 	"Deps": [
 		{
