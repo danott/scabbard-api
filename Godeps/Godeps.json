@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/danott/scabbard",
-	"GoVersion": "go1.2",
+	"GoVersion": "go1.2.1",
 	"Deps": [
 		{
 			"ImportPath": "github.com/codegangsta/inject",
@@ -15,6 +15,11 @@
 			"ImportPath": "github.com/codegangsta/martini-contrib/render",
 			"Comment": "v0.1-159-g8ce6181",
 			"Rev": "8ce6181c2609699e4c7cd30994b76a850a9cdadc"
+		},
+		{
+			"ImportPath": "github.com/danott/envflag",
+			"Comment": "0.0.1-8-g0205d89",
+			"Rev": "0205d890bb97eabe499e25dac726606e090cc630"
 		}
 	]
 }
