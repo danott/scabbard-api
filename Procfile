@@ -1,1 +1,1 @@
-web: scabbard
+web: scabbard-api
