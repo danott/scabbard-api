@@ -5,47 +5,35 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"regexp"
 )
 
-func reportPassageQueryError(err error) {
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func PassageQuery(s string) Passage {
+func PassageQuery(s string) (Passage, error) {
 	requestUrl, err := url.Parse("http://www.esvapi.org/v2/rest/passageQuery")
 	requestUrl.RawQuery = esvParams(s).Encode()
 
 	resp, err := http.Get(requestUrl.String())
-	reportPassageQueryError(err)
+	if err != nil {
+		return Passage{}, err
+	}
 
 	defer resp.Body.Close()
 
 	respBody, err := ioutil.ReadAll(resp.Body)
-	reportPassageQueryError(err)
+	if err != nil {
+		return Passage{}, err
+	}
 
 	body := string(respBody)
 
 	if matched, _ := regexp.MatchString("^ERROR:", body); matched {
-		reportPassageQueryError(errors.New(body))
+		return Passage{}, errors.New(body)
 	}
 
 	re := regexp.MustCompile("<h2>(.*)</h2>")
 	title := re.FindStringSubmatch(body)[1]
 
-	return Passage{title, body}
-}
-
-func apiKey() (s string) {
-	s = os.Getenv("ESV_API_KEY")
-
-	if len(s) < 1 {
-		s = "IP"
-	}
-	return
+	return Passage{title, body}, nil
 }
 
 func esvParams(s string) url.Values {
@@ -66,7 +54,7 @@ func esvParams(s string) url.Values {
 	v.Set("include-short-copyright", "false")
 	v.Set("include-copyright", "false")
 	v.Set("output-format", "html")
-	v.Set("key", apiKey())
+	v.Set("key", apiKey)
 	v.Set("passage", s)
 
 	return v

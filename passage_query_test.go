@@ -9,16 +9,14 @@ func assertEqual(t *testing.T, expected string, actual string) {
 }
 
 func TestHeading(t *testing.T) {
-	p := PassageQuery("Isa 40:8")
+	p, _ := PassageQuery("Isa 40:8")
 	assertEqual(t, "Isaiah 40:8", p.Heading)
 }
 
 func TestNotFound(t *testing.T) {
-	defer func() {
-		r := recover()
-		if r == nil {
-			t.Errorf("Should have panicked")
-		}
-	}()
-	PassageQuery("Gob 1:1")
+	_, err := PassageQuery("Gob 1:1")
+
+	if err == nil {
+		t.Errorf("Should have errored")
+	}
 }
