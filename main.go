@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net/http"
 
 	"github.com/codegangsta/martini"
@@ -19,22 +18,15 @@ type queryResult struct {
 
 type simpleStore map[string]queryResult
 
-// DB Returns a martini.Handler
-func DB() martini.Handler {
-	db := make(simpleStore)
-
-	return func(c martini.Context) {
-		c.Map(db)
-		c.Next()
-	}
-}
 func main() {
 	flag.StringVar(&apiKey, "api-key", "IP", "API Key for the ESV API")
 	envflag.Parse()
 
 	m := martini.Classic()
 	m.Use(render.Renderer())
-	m.Use(DB())
+
+	store := make(simpleStore)
+	m.Map(store)
 
 	m.Get("/search", PassageQueryHandler)
 	m.Get("/", HelpHandler)
@@ -46,13 +38,11 @@ type arbitraryJSON map[string]interface{}
 func PassageQueryHandler(ren render.Render, req *http.Request, store simpleStore) {
 	var passage Passage
 	var err error
-
 	q := req.URL.Query().Get("q")
+
 	if v, ok := store[q]; ok {
-		log.Printf("Found in cache")
 		passage, err = v.passage, v.err
 	} else {
-		log.Printf("Found in api")
 		passage, err = PassageQuery(q)
 		store[q] = queryResult{passage, err}
 	}
