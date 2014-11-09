@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"net/http"
+	"net/http/fcgi"
+	"runtime"
 
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
@@ -30,7 +32,12 @@ func main() {
 
 	m.Get("/search", PassageQueryHandler)
 	m.Get("/", HelpHandler)
-	m.Run()
+
+	if runtime.GOOS == "linux" {
+		fcgi.Serve(nil, m)
+	} else {
+		m.Run()
+	}
 }
 
 type arbitraryJSON map[string]interface{}
